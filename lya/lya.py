@@ -7,6 +7,7 @@ import os, sys
 import yaml, yaml.constructor
 
 
+
 class OrderedDictYAMLLoader(yaml.Loader):
 	'Based on: https://gist.github.com/844388'
 
@@ -41,18 +42,22 @@ class OrderedDictYAMLLoader(yaml.Loader):
 		return mapping
 
 
-class AttrDict(dict):
+
+class AttrDict(OrderedDict):
 
 	def __init__(self, *argz, **kwz):
-		for k,v in dict(*argz, **kwz).iteritems(): self[k] = v
+		super(AttrDict, self).__init__(*argz, **kwz)
 
 	def __setitem__(self, k, v):
 		super(AttrDict, self).__setitem__( k,
 			AttrDict(v) if isinstance(v, Mapping) else v )
 	def __getattr__(self, k):
-		if not k.startswith('__'): return self[k]
-		else: raise AttributeError # necessary for stuff like __deepcopy__ or __hash__
-	def __setattr__(self, k, v): self[k] = v
+		if not (k.startswith('__') or k.startswith('_OrderedDict__')): return self[k]
+		else: return super(AttrDict, self).__getattr__(k)
+	def __setattr__(self, k, v):
+		if k.startswith('_OrderedDict__'):
+			return super(AttrDict, self).__setattr__(k, v)
+		self[k] = v
 
 	@classmethod
 	def from_yaml(cls, path, if_exists=False):
@@ -101,7 +106,6 @@ class AttrDict(dict):
 		self.clear()
 		self.update_dict(base)
 
-
 	def dump(self, stream):
 		yaml.representer.SafeRepresenter.add_representer(
 			AttrDict, yaml.representer.SafeRepresenter.represent_dict )
@@ -126,6 +130,7 @@ def configure_logging(cfg, custom_level=None):
 			and entity.get('level') == 'custom': entity['level'] = custom_level
 	logging.config.dictConfig(cfg)
 	logging.captureWarnings(cfg.warnings)
+
 
 
 if __name__ == '__main__':
