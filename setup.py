@@ -8,7 +8,7 @@ pkg_root = os.path.dirname(__file__)
 setup(
 
 	name = 'layered-yaml-attrdict-config',
-	version = '12.05.3',
+	version = '12.05.4',
 	author = 'Mike Kazantsev',
 	author_email = 'mk.fraggod@gmail.com',
 	license = 'WTFPL',

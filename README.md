@@ -1,10 +1,10 @@
-layered-yaml-attrdict-config
+layered-yaml-attrdict-config (lya)
 --------------------
 
 YAML-based configuration module.
 
-A set of classes I've created over time to make configuration files readable and
-easy to use from the code.
+A set of classes I've created over time to make configuration files more
+readable and easier to use in the code.
 
 
 #### Basic syntax
@@ -164,6 +164,10 @@ But, you really shouldn't do that.
 Current-git version can be installed like this:
 
 	% pip install -e 'git://github.com/mk-fg/layered-yaml-attrdict-config.git#egg=layered-yaml-attrdict-config'
+
+Module uses [PyYAML](http://pyyaml.org/) for processing of the actual YAML
+files, but can work without it, as long as you use any methods with "yaml" in
+their name, i.e. creating and using AttrDict objects like a regular dicts.
 
 
 Example

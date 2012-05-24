@@ -4,7 +4,9 @@ from __future__ import print_function
 import itertools as it, operator as op, functools as ft
 from collections import Mapping, OrderedDict, defaultdict
 import os, sys
-import yaml, yaml.constructor
+
+try: import yaml, yaml.constructor
+except ImportError: pass
 
 
 
@@ -61,7 +63,6 @@ class AttrDict(OrderedDict):
 
 	@classmethod
 	def from_yaml(cls, path, if_exists=False):
-		import yaml
 		if if_exists and not os.path.exists(path): return cls()
 		return cls(yaml.load(open(path), OrderedDictYAMLLoader))
 
