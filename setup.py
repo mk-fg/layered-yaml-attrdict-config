@@ -5,10 +5,14 @@ import os
 
 pkg_root = os.path.dirname(__file__)
 
+# Error-handling here is to allow package to be built w/o README included
+try: readme = open(os.path.join(pkg_root, 'README.md')).read()
+except IOError: readme = ''
+
 setup(
 
 	name = 'layered-yaml-attrdict-config',
-	version = '12.05.4',
+	version = '12.06.0',
 	author = 'Mike Kazantsev',
 	author_email = 'mk.fraggod@gmail.com',
 	license = 'WTFPL',
@@ -16,7 +20,7 @@ setup(
 	url = 'https://github.com/mk-fg/layered-yaml-attrdict-config',
 
 	description = 'YAML-based configuration module',
-	long_description = open(os.path.join(pkg_root, 'README.md')).read(),
+	long_description = readme,
 
 	classifiers = [
 		'Development Status :: 4 - Beta',
