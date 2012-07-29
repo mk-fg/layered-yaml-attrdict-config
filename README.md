@@ -163,7 +163,7 @@ But, you really shouldn't do that.
 
 Current-git version can be installed like this:
 
-	% pip install -e 'git://github.com/mk-fg/layered-yaml-attrdict-config.git#egg=layered-yaml-attrdict-config'
+	% pip install 'git+https://github.com/mk-fg/layered-yaml-attrdict-config.git#egg=layered-yaml-attrdict-config'
 
 Module uses [PyYAML](http://pyyaml.org/) for processing of the actual YAML
 files, but can work without it, as long as you use any methods with "yaml" in
