@@ -121,9 +121,18 @@ class AttrDict(OrderedDict):
 
 
 
-def configure_logging(cfg, custom_level=None):
+_no_arg = object()
+def configure_logging(cfg, custom_level=None, debug=_no_arg):
 	import logging, logging.config
+	if debug is not _no_arg:
+		if custom_level is not None:
+			raise ValueError(( 'Either "custom_level" ({!r}) or "debug"'
+				' ({!r}) can be specified, not both' ).format(custom_level, debug))
+		custom_level = logging.DEBUG if debug else logging.WARNING
 	if custom_level is None: custom_level = logging.WARNING
+	if not cfg:
+		logging.basicConfig(level=custom_level)
+		return
 	for entity in it.chain.from_iterable(it.imap(
 			op.methodcaller('viewvalues'),
 			[cfg] + list(cfg.get(k, dict()) for k in ['handlers', 'loggers']) )):
