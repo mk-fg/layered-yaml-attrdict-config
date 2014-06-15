@@ -9,8 +9,9 @@ readable and easier to use in the code.
 
 #### Basic syntax
 
-Idea is the same as with yaml.load() to load YAML configuration file like this
-one:
+Idea is the same as with `yaml.safe_load()` (`yaml.load()` was used before
+14.06.5, see #2 for rationale behind the change) to load YAML configuration file
+like this one:
 
 	core:
 	  connection:
