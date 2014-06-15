@@ -42,7 +42,7 @@ So consider this use-case:
 	for path in sys.argv[1:]: cfg.update_yaml(path)
 	cfg.dump(sys.stdout)
 
-(there is also AttrDict.update_dict method for recursive updates from dict)
+(there is also `AttrDict.update_dict` method for recursive updates from dict)
 
 With default configuration file from the previous section shipped along with the
 package as "default.yaml", you can have simple override like:
@@ -105,9 +105,9 @@ they should be unique) or you need to override some of the sections later, so
 list wrapper becomes completely artificial as it have to be converted into
 OrderedDict anyway.
 
-YAML files, parsed from AttrDict.from_yaml and AttrDict.update_yaml methods have
-key ordering preserved, and AttrDict objects are based on OrderedDict objects,
-which provide all the features of dict and preserve ordering during the
+YAML files, parsed from `AttrDict.from_yaml` and `AttrDict.update_yaml` methods
+have key ordering preserved, and AttrDict objects are based on OrderedDict
+objects, which provide all the features of dict and preserve ordering during the
 iteration like lists do.
 
 There's no downside to it - both ordered dicts and lists can be used as usual,
@@ -123,13 +123,13 @@ Example usage can be storage of the configuration tree in a simple k-v database
 (like berkdb) or comparison of configuration objects - ordered flat lists can be
 easily processed by the "diff" command, tested for equality or hashed.
 
-That is easy to do via AttrDict.flatten() method, producing (from config above)
+That is easy to do via `AttrDict.flatten` method, producing (from config above)
 a list like this one:
 
-	- (core, connection, endpoint): ssl:host=some.local.host:port=6697
-	- (core, connection, nickname): testbot
-	- (core, connection, reconnect, maxDelay): 30
-	- (core, xattr_emulation): /tmp/xattr.db
+	[ (('core', 'connection', 'endpoint'), 'ssl:host=some.local.host:port=6697'),
+	  (('core', 'connection', 'nickname'), 'testbot'),
+	  (('core', 'connection', 'reconnect', 'maxDelay'), 30),
+	  (('core', 'xattr_emulation'), '/tmp/xattr.db') ]
 
 Resulting list contains 2-value tuples - key tuple, containing the full path of
 the value and the value object itself.
@@ -141,7 +141,8 @@ Installation
 
 It's a regular package for Python 2.6+ and Python 3.0+.
 
-Using [pip](http://pip-installer.org/) is the best way:
+Using [pip](http://pip-installer.org/) is the best way (see also
+[pip2014](http://pip2014.com/) basic usage essentials):
 
 	% pip install layered-yaml-attrdict-config
 
@@ -150,8 +151,7 @@ If you don't have it, use:
 	% easy_install pip
 	% pip install layered-yaml-attrdict-config
 
-Alternatively ([see
-also](http://www.pip-installer.org/en/latest/installing.html)):
+Alternatively ([see also](http://www.pip-installer.org/en/latest/installing.html)):
 
 	% curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
 	% pip install layered-yaml-attrdict-config
