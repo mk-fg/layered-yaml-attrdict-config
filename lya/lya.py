@@ -10,11 +10,11 @@ except ImportError: pass
 
 
 
-class OrderedDictYAMLLoader(yaml.Loader):
+class OrderedDictYAMLLoader(yaml.SafeLoader):
 	'Based on: https://gist.github.com/844388'
 
 	def __init__(self, *args, **kwargs):
-		yaml.Loader.__init__(self, *args, **kwargs)
+		super(OrderedDictYAMLLoader, self).__init__(*args, **kwargs)
 		self.add_constructor(u'tag:yaml.org,2002:map', type(self).construct_yaml_map)
 		self.add_constructor(u'tag:yaml.org,2002:omap', type(self).construct_yaml_map)
 
