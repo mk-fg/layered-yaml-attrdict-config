@@ -36,7 +36,7 @@ class OrderedDictYAMLLoader(yaml.Loader):
 			key = self.construct_object(key_node, deep=deep)
 			try:
 				hash(key)
-			except TypeError, exc:
+			except TypeError as exc:
 				raise yaml.constructor.ConstructorError( 'while constructing a mapping',
 					node.start_mark, 'found unacceptable key ({})'.format(exc), key_node.start_mark )
 			value = self.construct_object(value_node, deep=deep)
@@ -69,7 +69,7 @@ class AttrDict(OrderedDict):
 	@staticmethod
 	def flatten_dict(data, path=tuple()):
 		dst = list()
-		for k,v in data.iteritems():
+		for k,v in data.items():
 			k = path + (k,)
 			if isinstance(v, Mapping):
 				for v in v.flatten(k): dst.append(v)
