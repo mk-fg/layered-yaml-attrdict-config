@@ -138,7 +138,7 @@ the value and the value object itself.
 Installation
 --------------------
 
-It's a regular package for Python 2.7 (not 3.X).
+It's a regular package for Python 2.6+ and Python 3.0+.
 
 Using [pip](http://pip-installer.org/) is the best way:
 
