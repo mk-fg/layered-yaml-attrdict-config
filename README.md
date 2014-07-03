@@ -135,6 +135,41 @@ Resulting list contains 2-value tuples - key tuple, containing the full path of
 the value and the value object itself.
 
 
+#### A note on name clashes
+
+Methods of AttrDict object itself, like ones listed above can clash with keys in
+the config file itself, in which case attribute access to config values is not
+possible, i.e.:
+
+	>>> a = lya.AttrDict(keys=1)
+	>>> a.keys
+	<bound method AttrDict.keys of AttrDict([('keys', 1)])>
+	>>> a['keys']
+	1
+
+It's kinda-deliberate that such basic methods (like the ones from built-in dict
+and listed above) are accessible by as usual attributes, though a bit
+inconsistent.
+
+With any kind of dynamic keys, just use access by key, not by attr.
+
+
+#### More stuff
+
+Some extra data-mangling methods are available via `AttrDict._` proxy object
+(that allows access to all other methods as well, e.g. `a._.pop(k)`).
+
+* `AttrDict._.apply(func, items=False, update=True)`
+
+	Apply a function (`f(v)` or `f(k, v)` if "items" is set) to all values (on any
+	level, depth-first), modifying them in-place if "update" is set.
+
+* `AttrDict._.filter(func, items=False)`
+
+	Same as "apply" above, but will remove values if filter function returns falsy
+	value, leaving them unchanged otherwise.
+
+
 
 Installation
 --------------------

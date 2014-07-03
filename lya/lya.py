@@ -3,10 +3,12 @@ from __future__ import print_function
 
 import itertools as it, operator as op, functools as ft
 from collections import Mapping, OrderedDict, defaultdict
-import os, sys
+import os, sys, re, types
 
 try: import yaml, yaml.constructor
 except ImportError: pass
+
+str_lstrip = lambda s,k: s[len(k):] if s.startswith(k) else s
 
 
 
@@ -49,6 +51,11 @@ class AttrDict(OrderedDict):
 
 	def __init__(self, *argz, **kwz):
 		super(AttrDict, self).__init__(*argz, **kwz)
+		super(AttrDict, self).__setattr__('_', type(
+			'AttrDict_methods', (object,),
+			dict( (str_lstrip(k, '_lya__'), v)
+				for k,v in ((k,getattr(self,k)) for k in dir(self))
+				if re.search(r'^(_lya__)?[^_]', k) and isinstance(v, types.MethodType) ) ))
 
 	def __setitem__(self, k, v):
 		super(AttrDict, self).__setitem__( k,
@@ -118,6 +125,20 @@ class AttrDict(OrderedDict):
 			set, yaml.representer.SafeRepresenter.represent_list )
 		yaml.safe_dump( self, stream,
 			default_flow_style=False, encoding='utf-8' )
+
+	## _lya__* methods are available via "_" proxy, e.g. "a._.apply()"
+
+	def _lya__apply(self, func, items=False, update=True):
+		for k,v in self.viewitems():
+			if isinstance(v, AttrDict): v = v._lya__apply(func, items=items, update=update)
+			else: v = func(v) if not items else func(k, v)
+			if update: self[k] = v
+
+	def _lya__filter(self, func, items=False):
+		for k,v in self.viewitems():
+			if isinstance(v, AttrDict): v = v._lya__filter(func, items=items)
+			else: v = func(v) if not items else func(k, v)
+			if not v: del self[k]
 
 
 
