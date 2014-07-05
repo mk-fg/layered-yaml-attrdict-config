@@ -8,8 +8,6 @@ import os, sys, re, types
 try: import yaml, yaml.constructor
 except ImportError: pass
 
-str_lstrip = lambda s,k: s[len(k):] if s.startswith(k) else s
-
 
 
 class OrderedDictYAMLLoader(yaml.SafeLoader):
@@ -47,15 +45,19 @@ class OrderedDictYAMLLoader(yaml.SafeLoader):
 
 
 
+class AttrDict_methods(object):
+
+	def __init__(self, obj):
+		for k, v in ((k,getattr(obj,k)) for k in dir(obj)):
+			if re.search(r'^(_lya__)?[^_]', k) and isinstance(v, types.MethodType):
+				if k.startswith('_lya__'): k = k[6:]
+				setattr(self, k, v)
+
 class AttrDict(OrderedDict):
 
 	def __init__(self, *argz, **kwz):
 		super(AttrDict, self).__init__(*argz, **kwz)
-		super(AttrDict, self).__setattr__('_', type(
-			'AttrDict_methods', (object,),
-			dict( (str_lstrip(k, '_lya__'), v)
-				for k,v in ((k,getattr(self,k)) for k in dir(self))
-				if re.search(r'^(_lya__)?[^_]', k) and isinstance(v, types.MethodType) ) ))
+		super(AttrDict, self).__setattr__('_', AttrDict_methods(self))
 
 	def __setitem__(self, k, v):
 		super(AttrDict, self).__setitem__( k,

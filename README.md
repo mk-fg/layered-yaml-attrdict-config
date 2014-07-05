@@ -179,7 +179,7 @@ Some extra data-mangling methods are available via `AttrDict._` proxy object
 Installation
 --------------------
 
-It's a regular package for Python 2.6+ and Python 3.0+.
+It's a regular package for Python 2.7+ and Python 3.0+.
 
 Using [pip](http://pip-installer.org/) is the best way (see also
 [pip2014](http://pip2014.com/) basic usage essentials):
