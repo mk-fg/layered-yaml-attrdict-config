@@ -103,7 +103,7 @@ class AttrDict(OrderedDict):
 	def update_yaml(self, path):
 		self.update_flat(self.from_yaml(path))
 
-	def clone(self, apply_func=None, items=False):
+	def clone(self):
 		clone = AttrDict()
 		clone.update_dict(self)
 		return clone
