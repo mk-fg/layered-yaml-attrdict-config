@@ -130,9 +130,10 @@ class AttrDict(OrderedDict):
 
 	def _lya__apply(self, func, items=False, update=True):
 		for k,v in self.viewitems():
-			if isinstance(v, AttrDict): v = v._lya__apply(func, items=items, update=update)
-			else: v = func(v) if not items else func(k, v)
-			if update: self[k] = v
+			if isinstance(v, AttrDict): v._lya__apply(func, items=items, update=update)
+			else:
+				v = func(v) if not items else func(k, v)
+				if update: self[k] = v
 
 	def _lya__apply_flat(self, func, update=True):
 		flat = self.flatten_dict(self)
@@ -143,9 +144,10 @@ class AttrDict(OrderedDict):
 
 	def _lya__filter(self, func, items=False):
 		for k,v in self.viewitems():
-			if isinstance(v, AttrDict): v = v._lya__filter(func, items=items)
-			else: v = func(v) if not items else func(k, v)
-			if not v: del self[k]
+			if isinstance(v, AttrDict): v._lya__filter(func, items=items)
+			else:
+				v = func(v) if not items else func(k, v)
+				if not v: del self[k]
 
 
 
