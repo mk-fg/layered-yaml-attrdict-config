@@ -103,7 +103,7 @@ class AttrDict(OrderedDict):
 	def update_yaml(self, path):
 		self.update_flat(self.from_yaml(path))
 
-	def clone(self):
+	def clone(self, apply_func=None, items=False):
 		clone = AttrDict()
 		clone.update_dict(self)
 		return clone
@@ -133,6 +133,13 @@ class AttrDict(OrderedDict):
 			if isinstance(v, AttrDict): v = v._lya__apply(func, items=items, update=update)
 			else: v = func(v) if not items else func(k, v)
 			if update: self[k] = v
+
+	def _lya__apply_flat(self, func, update=True):
+		flat = self.flatten_dict(self)
+		for n, (k, v) in enumerate(flat):
+			v = func(k, v)
+			if update: flat[n] = k, v
+		if update: self.update_flat(flat)
 
 	def _lya__filter(self, func, items=False):
 		for k,v in self.viewitems():

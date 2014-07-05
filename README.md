@@ -164,6 +164,11 @@ Some extra data-mangling methods are available via `AttrDict._` proxy object
 	Apply a function (`f(v)` or `f(k, v)` if "items" is set) to all values (on any
 	level, depth-first), modifying them in-place if "update" is set.
 
+* `AttrDict._.apply_flat(func, update=True)`
+
+	Same as "apply" above, but passes tuple of keys forming a path to each value
+	(e.g. `('a', 'b', 'c')` for value in `dict(a=dict(b=dict(c=1)))`) to `f(k, v)`.
+
 * `AttrDict._.filter(func, items=False)`
 
 	Same as "apply" above, but will remove values if filter function returns falsy
