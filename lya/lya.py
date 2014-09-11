@@ -8,11 +8,8 @@ import os, sys, re, types
 try: import yaml, yaml.constructor
 except ImportError: pass
 
-def _is_string_instance(obj):
-	try:
-		return isinstance(obj, basestring)
-	except NameError:
-		return isinstance(obj, str)
+try: from types import StringTypes as str_types
+except ImportError: str_types = str, bytes # py3
 
 
 class OrderedDictYAMLLoader(yaml.SafeLoader):
@@ -77,7 +74,7 @@ class AttrDict(OrderedDict):
 
 	@classmethod
 	def from_yaml(cls, path_or_file, if_exists=False):
-		if _is_string_instance(path_or_file):
+		if instance(path_or_file, str_types):
 			if if_exists and not os.path.exists(path_or_file): return cls()
 			with open(path_or_file) as src:
 				return cls(yaml.load(src, OrderedDictYAMLLoader))
