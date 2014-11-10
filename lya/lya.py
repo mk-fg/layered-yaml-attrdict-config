@@ -35,7 +35,8 @@ class OrderedDictYAMLLoader(yaml.SafeLoader):
 
 		mapping = OrderedDict()
 		for key_node, value_node in node.value:
-			key = self.construct_object(key_node, deep=deep)
+			key = self.construct_object(key_node, deep=True) # default is to not recurse into keys
+			if isinstance(key, list): key = tuple(key)
 			try:
 				hash(key)
 			except TypeError as exc:
@@ -136,10 +137,12 @@ class AttrDict(OrderedDict):
 
 	## _lya__* methods are available via "_" proxy, e.g. "a._.apply()"
 
-	def _lya__apply(self, func, items=False, update=True):
+	def _lya__apply(self, func, items=False, vals_only=True, update=True):
 		for k,v in self.viewitems():
-			if isinstance(v, AttrDict): v._lya__apply(func, items=items, update=update)
-			else:
+			v_is_dict = isinstance(v, AttrDict)
+			if v_is_dict:
+				v._lya__apply(func, items=items, vals_only=vals_only, update=update)
+			if not vals_only or not v_is_dict:
 				v = func(v) if not items else func(k, v)
 				if update: self[k] = v
 
