@@ -109,8 +109,8 @@ class AttrDict(OrderedDict):
 	def update_dict(self, data):
 		self.update_flat(self.flatten_dict(data))
 
-	def update_yaml(self, path):
-		self.update_flat(self.from_yaml(path))
+	def update_yaml(self, path, if_exists=False):
+		self.update_flat(self.from_yaml(path, if_exists=if_exists))
 
 	def clone(self):
 		clone = AttrDict()
