@@ -12,7 +12,7 @@ except IOError: readme = ''
 setup(
 
 	name = 'layered-yaml-attrdict-config',
-	version = '14.12.0',
+	version = '14.12.1',
 	author = 'Mike Kazantsev',
 	author_email = 'mk.fraggod@gmail.com',
 	license = 'WTFPL',
@@ -30,7 +30,6 @@ setup(
 		'Operating System :: Unix',
 		'Programming Language :: Python',
 		'Programming Language :: Python :: 2',
-		'Programming Language :: Python :: 2.6',
 		'Programming Language :: Python :: 2.7',
 		'Programming Language :: Python :: 3',
 		'Programming Language :: Python :: 3.2',
