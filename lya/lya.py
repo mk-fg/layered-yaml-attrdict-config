@@ -80,7 +80,7 @@ class AttrDict(OrderedDict):
 
 	@classmethod
 	def from_yaml(cls, path_or_file, if_exists=False):
-		src_load = lambda src: cls.from_data(yaml.load(src, OrderedDictYAMLLoader))
+		src_load = lambda src: cls.from_data(yaml.safe_load(src, OrderedDictYAMLLoader))
 		if isinstance(path_or_file, str_types):
 			if if_exists and not os.path.exists(path_or_file): return cls()
 			with open(path_or_file) as src: return src_load(src)
