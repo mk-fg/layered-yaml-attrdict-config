@@ -26,8 +26,16 @@ class OrderedDictYAMLLoader(yaml.SafeLoader):
 
 	def __init__(self, *args, **kwargs):
 		super(OrderedDictYAMLLoader, self).__init__(*args, **kwargs)
-		self.add_constructor(u'tag:yaml.org,2002:map', type(self).construct_yaml_map)
-		self.add_constructor(u'tag:yaml.org,2002:omap', type(self).construct_yaml_map)
+
+		try:
+			map_tag = u'tag:yaml.org,2002:map'
+			omap_tag = u'tag:yaml.org,2002:omap'
+		except SyntaxError:
+			map_tag = 'tag:yaml.org,2002:map'
+			omap_tag = 'tag:yaml.org,2002:omap'
+
+		self.add_constructor(map_tag, type(self).construct_yaml_map)
+		self.add_constructor(omap_tag, type(self).construct_yaml_map)
 
 	def construct_yaml_map(self, node):
 		data = OrderedDict()
