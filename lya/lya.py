@@ -17,8 +17,8 @@ class OrderedDictYAMLLoader(yaml.SafeLoader):
 
 	def __init__(self, *args, **kwargs):
 		super(OrderedDictYAMLLoader, self).__init__(*args, **kwargs)
-		self.add_constructor(u'tag:yaml.org,2002:map', type(self).construct_yaml_map)
-		self.add_constructor(u'tag:yaml.org,2002:omap', type(self).construct_yaml_map)
+		self.add_constructor('tag:yaml.org,2002:map', type(self).construct_yaml_map)
+		self.add_constructor('tag:yaml.org,2002:omap', type(self).construct_yaml_map)
 
 	def construct_yaml_map(self, node):
 		data = OrderedDict()
@@ -142,7 +142,7 @@ class AttrDict(OrderedDict):
 	## _lya__* methods are available via "_" proxy, e.g. "a._.apply()"
 
 	def _lya__apply(self, func, items=False, vals_only=True, update=True):
-		for k,v in self.viewitems():
+		for k,v in self.items():
 			v_is_dict = isinstance(v, AttrDict)
 			if v_is_dict:
 				v._lya__apply(func, items=items, vals_only=vals_only, update=update)
@@ -158,7 +158,7 @@ class AttrDict(OrderedDict):
 		if update: self.update_flat(flat)
 
 	def _lya__filter(self, func, items=False):
-		for k,v in self.viewitems():
+		for k,v in self.items():
 			if isinstance(v, AttrDict): v._lya__filter(func, items=items)
 			else:
 				v = func(v) if not items else func(k, v)
