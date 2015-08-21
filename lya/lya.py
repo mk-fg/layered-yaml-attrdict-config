@@ -1,15 +1,24 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import itertools as it, operator as op, functools as ft
-from collections import Mapping, OrderedDict, defaultdict
+from collections import Mapping, defaultdict
 import os, sys, re, types
 
-try: import yaml, yaml.constructor
-except ImportError: pass
+try:
+	from collections import OrderedDict
+except ImportError:
+	from ordereddict import OrderedDict
 
-try: from types import StringTypes as str_types
-except ImportError: str_types = str, bytes # py3
+try:
+	import yaml, yaml.constructor
+except ImportError:
+	pass
+
+try:
+	from types import StringTypes as str_types
+except ImportError:
+	str_types = str, bytes # py3
 
 
 class OrderedDictYAMLLoader(yaml.SafeLoader):
@@ -17,8 +26,8 @@ class OrderedDictYAMLLoader(yaml.SafeLoader):
 
 	def __init__(self, *args, **kwargs):
 		super(OrderedDictYAMLLoader, self).__init__(*args, **kwargs)
-		self.add_constructor(u'tag:yaml.org,2002:map', type(self).construct_yaml_map)
-		self.add_constructor(u'tag:yaml.org,2002:omap', type(self).construct_yaml_map)
+		self.add_constructor('tag:yaml.org,2002:map', type(self).construct_yaml_map)
+		self.add_constructor('tag:yaml.org,2002:omap', type(self).construct_yaml_map)
 
 	def construct_yaml_map(self, node):
 		data = OrderedDict()
