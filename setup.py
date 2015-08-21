@@ -38,7 +38,7 @@ setup(
 		'Topic :: Software Development',
 		'Topic :: Software Development :: Libraries :: Python Modules' ],
 
-	install_requires = ['PyYAML'],
+	install_requires = ['PyYAML', 'ordereddict'],
 	packages = find_packages(),
 	package_data = {'': ['README.txt']},
 	exclude_package_data = {'': ['README.*']} )

@@ -2,14 +2,23 @@
 from __future__ import print_function
 
 import itertools as it, operator as op, functools as ft
-from collections import Mapping, OrderedDict, defaultdict
+from collections import Mapping, defaultdict
 import os, sys, re, types
 
-try: import yaml, yaml.constructor
-except ImportError: pass
+try:
+	from collections import OrderedDict
+except ImportError:
+	from ordereddict import OrderedDict
 
-try: from types import StringTypes as str_types
-except ImportError: str_types = str, bytes # py3
+try:
+	import yaml, yaml.constructor
+except ImportError:
+	pass
+
+try:
+	from types import StringTypes as str_types
+except ImportError:
+	str_types = str, bytes # py3
 
 
 class OrderedDictYAMLLoader(yaml.SafeLoader):
