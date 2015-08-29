@@ -154,6 +154,31 @@ inconsistent.
 With any kind of dynamic keys, just use access by key, not by attr.
 
 
+#### Lists and tuples inside AttrDicts
+
+These two types (and their subclasses) are handled specially, transforming dict
+values inside to AttrDicts, and wrapping all these into same sequence type.
+
+I.e. loading this YAML:
+
+	parsers:
+	  - module: icmp
+	  - module: tcp
+	    filter: port 80
+	  - module: udp
+
+Will produce AttrDict with a list of AttrDict's inside, so that
+e.g. `data.parsers[1].filter` would work afterwards.
+
+But flattening that won't flatten lists, sets, tuples or anything but the dicts
+inside, and `AttrDict.update()` won't "merge" these types in any way, just
+override previous ones for same key/path.
+
+This is done for consistency and simplicity (same type for any subtree), but see
+[github-issue-6](https://github.com/mk-fg/layered-yaml-attrdict-config/issues/6)
+for more rationale behind it.
+
+
 #### More stuff
 
 Some extra data-mangling methods are available via `AttrDict._` proxy object

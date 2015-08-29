@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 import itertools as it, operator as op, functools as ft
-from collections import Mapping, OrderedDict, defaultdict
+from collections import Mapping, Sequence, Set, OrderedDict, defaultdict
 import os, sys, re, types
 
 try: import yaml, yaml.constructor
@@ -63,8 +63,7 @@ class AttrDict(OrderedDict):
 		super(AttrDict, self).__setattr__('_', AttrDict_methods(self))
 
 	def __setitem__(self, k, v):
-		super(AttrDict, self).__setitem__( k,
-			AttrDict(v) if isinstance(v, Mapping) else v )
+		super(AttrDict, self).__setitem__(k, self.map_types(v))
 	def __getattr__(self, k):
 		if not (k.startswith('__') or k.startswith('_OrderedDict__')): return self[k]
 		else: return super(AttrDict, self).__getattr__(k)
@@ -72,6 +71,13 @@ class AttrDict(OrderedDict):
 		if k.startswith('_OrderedDict__'):
 			return super(AttrDict, self).__setattr__(k, v)
 		self[k] = v
+
+	@classmethod
+	def map_types(cls, data):
+		if isinstance(data, Mapping): return cls(data)
+		if not isinstance(data, (list, tuple)):
+			return type(data)(map(cls.map_types, data))
+		return data
 
 	@classmethod
 	def from_data(cls, data=None):
