@@ -75,7 +75,7 @@ class AttrDict(OrderedDict):
 	@classmethod
 	def map_types(cls, data):
 		if isinstance(data, Mapping): return cls(data)
-		if not isinstance(data, (list, tuple)):
+		if isinstance(data, (list, tuple)):
 			return type(data)(map(cls.map_types, data))
 		return data
 
