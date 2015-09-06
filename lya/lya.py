@@ -92,6 +92,10 @@ class AttrDict(OrderedDict):
 			with open(path_or_file) as src: return src_load(src)
 		else: return src_load(path_or_file)
 
+	@classmethod
+	def from_string(cls, yaml_str):
+		return cls.from_data(yaml.load(yaml_str, OrderedDictYAMLLoader))
+
 	@staticmethod
 	def flatten_dict(data, path=tuple()):
 		dst = list()
