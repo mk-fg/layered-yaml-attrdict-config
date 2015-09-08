@@ -317,8 +317,8 @@ In an arbitrary order.
 * `orderedattrdict <https://github.com/sanand0/orderedattrdict>`_
 
   Similar module to parse yaml configuration with attribute-access to subtrees
-  and values, created to be more PEP8-compatible and well-tested version of this
-  module (see `github-pr-10`_).
+  and values, created - among other things - to be more PEP8-compliant and
+  well-tested version of this module (see `github-pr-10`_).
 
   .. _github-pr-10: https://github.com/mk-fg/layered-yaml-attrdict-config/pull/10
 
@@ -364,5 +364,5 @@ In an arbitrary order.
 * `python-yconfig <https://github.com/jet9/python-yconfig>`_
 
   Supports some code evaluation right from the YAML files, if that's your thing
-  (can be really dangerous in general case, big security with e.g. ``yaml.load``
-  in general).
+  (can be really dangerous in general case, big security issue with
+  e.g. ``yaml.load`` in general).
