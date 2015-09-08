@@ -1,10 +1,10 @@
 layered-yaml-attrdict-config (lya)
 ==================================
 
-YAML-based configuration module.
+Simple YAML-based configuration module, does what it says in the name.
 
-A set of classes I've created over time to make configuration files more
-readable and easier to use in the code.
+There are generally MUCH more advanced and well-maintained modules for similar
+purpose, please see "Links" section below for a list with *some* of these.
 
 
 .. contents::
@@ -220,6 +220,24 @@ Some extra data-mangling methods are available via ``AttrDict._`` proxy object
 
 
 
+Example
+-------
+
+::
+
+  import sys, lya
+
+  if len(sys.argv) == 1:
+    print('Usage: {} [ config.yaml ... ]', file=sys.stderr)
+    sys.exit(1)
+
+  cfg = lya.AttrDict.from_yaml(sys.argv[1])
+  for path in sys.argv[2:]: cfg.update_yaml(path)
+
+  cfg.dump(sys.stdout)
+
+
+
 Installation
 ------------
 
@@ -264,18 +282,87 @@ their name, i.e. creating and using AttrDict objects like a regular dicts.
 
 
 
-Example
--------
+Links
+-----
 
-::
+In an arbitrary order.
 
-  import sys, lya
+* `confit <https://github.com/sampsyo/confit>`_
 
-  if len(sys.argv) == 1:
-    print('Usage: {} [ config.yaml ... ]', file=sys.stderr)
-    sys.exit(1)
+  Developed with- and used in the great
+  `beets <https://github.com/sampsyo/beets>`_ project.
 
-  cfg = lya.AttrDict.from_yaml(sys.argv[1])
-  for path in sys.argv[2:]: cfg.update_yaml(path)
+  Features not present in this module include:
 
-  cfg.dump(sys.stdout)
+  * "An utterly sensible API resembling dictionary-and-list structures but
+    providing transparent validation without lots of boilerplate code"
+
+    No validation here, which might be a good idea when working with yaml, where
+    user might be not aware of its type-parsing quirks (e.g. ``hash: 06ed1df``
+    will be a string, but ``hash: 0768031`` an int).
+
+  * "Look for configuration files in platform-specific paths"
+
+  * "Integration with command-line arguments via argparse or optparse from the
+    standard library"
+
+* `loadconfig <https://loadconfig.readthedocs.org/>`_
+
+  Attribute access, ordered dict values, great documentation (with tutorials),
+  ``!include`` type to split configs, ``!expand`` to pull one value from the
+  other config (e.g. previous layer), ``!env``, ``!read`` (load file into
+  value), CLI and `CLG <https://clg.readthedocs.org/>`_ (generate argparse stuff
+  from config) integration, really easy to use.
+
+* `orderedattrdict <https://github.com/sanand0/orderedattrdict>`_
+
+  Similar module to parse yaml configuration with attribute-access to subtrees
+  and values, created to be more PEP8-compatible and well-tested version of this
+  module (see `github-pr-10`_).
+
+  .. _github-pr-10: https://github.com/mk-fg/layered-yaml-attrdict-config/pull/10
+
+* `layeredconfig <https://layeredconfig.readthedocs.org/>`_
+
+  Supports a lot of source/backend formats, including e.g. etcd stores (r/w),
+  not just files or env vars, writeback (to these backends) for changed values,
+  last-modified auto-updating types of values, typed values in general,
+  integration with argparse and much more.
+
+  Also has attr-access and layered loading, with optional lookups for missing
+  values in other configs/sections.
+
+* `reyaml <https://github.com/ralienpp/reyaml>`_
+
+  Adds parsing of comments (important if human-editable config gets written
+  back), ability to check and produce meaningful error messages for invalid
+  values, warnings/errors for accidental inline comments (e.g. when # in
+  non-quoted url won't be parsed).
+
+* `configloader <https://configloader.readthedocs.org/en/latest/>`_
+
+  Inspired by flask.Config, has attribute access, can be updated from env and
+  other configuration formats (including .py files).
+
+* `yamlcfg <https://pypi.python.org/pypi/yamlcfg/>`_
+
+  Implements attribute access and ordered layers, can add a highest-priority
+  values from env vars.
+
+* `yamlconfig <https://pypi.python.org/pypi/yamlconfig/>`_
+
+  Implements basic templating from "default" values on top of YAML instead of
+  layers.
+
+* `yamlsettings <https://pypi.python.org/pypi/yamlsettings/>`_
+
+  Can "help manage project settings, without having to worry about accidentally
+  checking non-public information, like api keys".
+
+  Same attribute access, updates, etc basic stuff.
+
+* `python-yconfig <https://github.com/jet9/python-yconfig>`_
+
+  Supports some code evaluation right from the YAML files, if that's your thing
+  (can be really dangerous in general case, big security with e.g. ``yaml.load``
+  in general).
