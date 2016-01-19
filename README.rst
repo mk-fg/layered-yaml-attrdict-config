@@ -6,6 +6,31 @@ Simple YAML-based configuration module, does what it says in the name.
 There are generally MUCH more advanced and well-maintained modules for similar
 purpose, please see "Links" section below for a list with *some* of these.
 
+Much simplier alternative can be (Python 3)::
+
+	from collections import ChainMap
+
+	class DeepChainMap(ChainMap):
+		def __init__(self, *maps):
+			super(DeepChainMap, self).__init__(*filter(None, maps))
+		def __getattr__(self, k):
+			k_maps = list()
+			for m in self.maps:
+				v = m.get(k)
+				if isinstance(v, dict): k_maps.append(v)
+				elif v is not None: return v
+			return DeepChainMap(*k_maps)
+
+	import yaml
+	cli_opts = dict(connection=dict(port=6789))
+	file_conf_a, file_conf_b = None, yaml.safe_load('connection: {host: myhost, port: null}')
+	defaults = dict(connection=dict(host='localhost', port=1234, proto='tcp'))
+
+	conf = DeepChainMap(cli_opts, file_conf_a, file_conf_b, defaults)
+	print(conf.connection.host, conf.connection.port, conf.connection.proto)
+	# Should print "myhost 6789 tcp", with changes to underlying maps propagating to "conf"
+
+|
 
 .. contents::
   :backlinks: none
