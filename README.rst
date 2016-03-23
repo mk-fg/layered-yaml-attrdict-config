@@ -6,29 +6,7 @@ Simple YAML-based configuration module, does what it says in the name.
 There are generally MUCH more advanced and well-maintained modules for similar
 purpose, please see "Links" section below for a list with *some* of these.
 
-Much simplier alternative can be (Python 3)::
-
-	from collections import ChainMap
-
-	class DeepChainMap(ChainMap):
-		def __init__(self, *maps):
-			super(DeepChainMap, self).__init__(*filter(None, maps))
-		def __getattr__(self, k):
-			k_maps = list()
-			for m in self.maps:
-				v = m.get(k)
-				if isinstance(v, dict): k_maps.append(v)
-				elif v is not None: return v
-			return DeepChainMap(*k_maps)
-
-	import yaml
-	cli_opts = dict(connection=dict(port=6789))
-	file_conf_a, file_conf_b = None, yaml.safe_load('connection: {host: myhost, port: null}')
-	defaults = dict(connection=dict(host='localhost', port=1234, proto='tcp'))
-
-	conf = DeepChainMap(cli_opts, file_conf_a, file_conf_b, defaults)
-	print(conf.connection.host, conf.connection.port, conf.connection.proto)
-	# Should print "myhost 6789 tcp", with changes to underlying maps propagating to "conf"
+See also "Simplier code snippets" part below for another alternative.
 
 |
 
@@ -391,3 +369,95 @@ In an arbitrary order.
   Supports some code evaluation right from the YAML files, if that's your thing
   (can be really dangerous in general case, big security issue with
   e.g. ``yaml.load`` in general).
+
+
+
+Simplier code snippets
+----------------------
+
+Much simplier alternative can be (Python 3)::
+
+  from collections import ChainMap
+
+  class DeepChainMap(ChainMap):
+    def __init__(self, *maps, **map0):
+      super(DeepChainMap, self)\
+        .__init__(*filter(None, [map0] + list(maps)))
+    def __getattr__(self, k):
+      k_maps = list()
+      for m in self.maps:
+        if k in m:
+          if isinstance(m[k], dict): k_maps.append(m[k])
+          else: return m[k]
+      if not k_maps: raise AttributeError(k)
+      return DeepChainMap(*k_maps)
+    def __setattr__(self, k, v):
+      if k in ['maps']:
+        return super(DeepChainMap, self).__setattr__(k, v)
+      self[k] = v
+
+  import yaml
+  cli_opts = dict(connection=dict(port=6789))
+  file_conf_a, file_conf_b = None, yaml.safe_load('connection: {host: myhost, port: null}')
+  defaults = dict(connection=dict(host='localhost', port=1234, proto='tcp'))
+
+  conf = DeepChainMap(cli_opts, file_conf_a, file_conf_b, defaults)
+  print(conf.connection.host, conf.connection.port, conf.connection.proto)
+  # Should print "myhost 6789 tcp", with changes to underlying maps propagating to "conf"
+
+Similar thing I tend to use with Python-2.7 these days::
+
+  import itertools as it, operator as op, functools as ft
+  from collections import Mapping, MutableMapping
+
+  class DeepChainMap(MutableMapping):
+
+    _maps = None
+
+    def __init__(self, *maps, **map0):
+      self._maps = list(maps)
+      if map0 or not self._maps: self._maps = [map0] + self._maps
+
+    def __repr__(self):
+      return '<DCM {:x} {}>'.format(id(self), repr(self._asdict()))
+
+    def _asdict(self):
+      return dict(it.chain.from_iterable(
+        m.items() for m in reversed(self._maps) ))
+
+    def keys(self):
+      return list(it.chain.from_iterable(m.viewkeys() for m in self._maps))
+    def __iter__(self): return iter(self.keys())
+    def __len__(self): return len(self.keys())
+
+    def __getitem__(self, k):
+      k_maps = list()
+      for m in self._maps:
+        if k in m:
+          if isinstance(m[k], Mapping): k_maps.append(m[k])
+          elif not (m[k] is None and k_maps): return m[k]
+      if not k_maps: raise KeyError(k)
+      return DeepChainMap(*k_maps)
+
+    def __getattr__(self, k):
+      try: return self[k]
+      except KeyError: raise AttributeError(k)
+
+    def __setitem__(self, k, v):
+      self._maps[0][k] = v
+
+    def __setattr__(self, k, v):
+      for m in map(op.attrgetter('__dict__'), [self] + self.__class__.mro()):
+        if k in m:
+          self.__dict__[k] = v
+          break
+      else: self[k] = v
+
+    def __delitem__(self, k):
+      for m in self._maps:
+        if k in m: del m[k]
+
+Please don't add 10-50 line dep modules to your code needlessly, lest we end up
+with `"This kind of just broke the internet"`_ kind of mess.
+
+.. _"This kind of just broke the internet": https://medium.com/@Rich_Harris/how-to-not-break-the-internet-with-this-one-weird-trick-e3e2d57fee28#.pbzlm4ueu
