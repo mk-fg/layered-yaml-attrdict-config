@@ -288,14 +288,14 @@ their name, i.e. creating and using AttrDict objects like a regular dicts.
 Links
 -----
 
-In an arbitrary order.
+As of 2015, in an arbitrary order.
 
 * `confit <https://github.com/sampsyo/confit>`_
 
   Developed with- and used in the great
   `beets <https://github.com/sampsyo/beets>`_ project.
 
-  Features not present in this module include:
+  Extra features that it has over this module include:
 
   * "An utterly sensible API resembling dictionary-and-list structures but
     providing transparent validation without lots of boilerplate code"
@@ -375,14 +375,13 @@ In an arbitrary order.
 Simplier code snippets
 ----------------------
 
-Much simplier alternative can be (Python 3)::
+Simplier alternative to this module can be (Python 3)::
 
   from collections import ChainMap
 
   class DeepChainMap(ChainMap):
     def __init__(self, *maps, **map0):
-      super(DeepChainMap, self)\
-        .__init__(*filter(None, [map0] + list(maps)))
+      super().__init__(*filter(None, [map0] + list(maps)))
     def __getattr__(self, k):
       k_maps = list()
       for m in self.maps:
@@ -392,8 +391,7 @@ Much simplier alternative can be (Python 3)::
       if not k_maps: raise AttributeError(k)
       return DeepChainMap(*k_maps)
     def __setattr__(self, k, v):
-      if k in ['maps']:
-        return super(DeepChainMap, self).__setattr__(k, v)
+      if k in ['maps']: return super().__setattr__(k, v)
       self[k] = v
 
   import yaml
@@ -405,7 +403,7 @@ Much simplier alternative can be (Python 3)::
   print(conf.connection.host, conf.connection.port, conf.connection.proto)
   # Should print "myhost 6789 tcp", with changes to underlying maps propagating to "conf"
 
-Similar thing I tend to use with Python-2.7 these days::
+Similar thing for Python-2.7::
 
   import itertools as it, operator as op, functools as ft
   from collections import Mapping, MutableMapping
@@ -457,7 +455,14 @@ Similar thing I tend to use with Python-2.7 these days::
       for m in self._maps:
         if k in m: del m[k]
 
-Please don't add 10-50 line dep modules to your code needlessly, lest we end up
-with `"This kind of just broke the internet"`_ kind of mess.
+Or if you just need AttrDict::
+
+  class adict(dict):
+    def __init__(self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+      self.__dict__ = self
+
+Please don't add 10-50 line dep modules to your code needlessly,
+lest we end up with `"This kind of just broke the internet"`_ kind of mess.
 
 .. _"This kind of just broke the internet": https://medium.com/@Rich_Harris/how-to-not-break-the-internet-with-this-one-weird-trick-e3e2d57fee28#.pbzlm4ueu
