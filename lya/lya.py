@@ -65,11 +65,10 @@ class AttrDict(OrderedDict):
 	def __setitem__(self, k, v):
 		super(AttrDict, self).__setitem__(k, self.map_types(v))
 	def __getattr__(self, k):
-		try:
-			if not (k.startswith('__') or k.startswith('_OrderedDict__')): return self[k]
+			if not (k.startswith('__') or k.startswith('_OrderedDict__')):
+				try: return self[k]
+				except KeyError: raise AttributeError(k)
 			else: return super(AttrDict, self).__getattr__(k)
-		except KeyError:
-			raise AttributeError
 	def __setattr__(self, k, v):
 		if k.startswith('_OrderedDict__'):
 			return super(AttrDict, self).__setattr__(k, v)
