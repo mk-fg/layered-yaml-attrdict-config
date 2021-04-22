@@ -6,7 +6,10 @@ Simple YAML-based configuration module, does what it says in the name.
 There are generally MUCH more advanced and well-maintained modules for similar
 purpose, please see "Links" section below for a list with *some* of these.
 
-See also "Simplier code snippets" part below for another alternative.
+See also "Simplier code snippets" part below for another good alternative.
+
+**Deprecated:** don't think anything should be using this by now,
+so only here for reference and maybe easier conversion of some really old code.
 
 |
 
@@ -379,17 +382,17 @@ Simplier alternative to this module can be (Python 3)::
 
   from collections import ChainMap
 
-  class DeepChainMap(ChainMap):
+  class DeepChainMap(cs.ChainMap):
     def __init__(self, *maps, **map0):
       super().__init__(*filter(None, [map0] + list(maps)))
-    def __getattr__(self, k):
+    def __getitem__(self, k, _err=KeyError):
       k_maps = list()
       for m in self.maps:
-        if k in m:
-          if isinstance(m[k], dict): k_maps.append(m[k])
-          else: return m[k]
-      if not k_maps: raise AttributeError(k)
-      return DeepChainMap(*k_maps)
+        if k in m: k_maps.append(m[k])
+      if not k_maps: raise _err(k)
+      if not isinstance(k_maps[0], dict): return k_maps[0]
+      return DeepChainMap(*(m for m in k_maps if isinstance(m, dict)))
+    def __getattr__(self, k): return self.__getitem__(k, _err=AttributeError)
     def __setattr__(self, k, v):
       if k in ['maps']: return super().__setattr__(k, v)
       self[k] = v
